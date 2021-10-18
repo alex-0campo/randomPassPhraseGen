@@ -2,9 +2,7 @@
 param(
     $numPwd = 5,
     $numWords = 2,
-    $numSpcl = 4 #,
-    # $numDigits = 3 #,
-    # $numUpperCase = 3
+    $numSpcl = 4
 )
 
 $filePath = "$PSScriptRoot\IndexedWords.txt"
@@ -35,22 +33,19 @@ function randomSpecialChar
         $numSpcl
     )
 
-    # random special character (ascii decimal 33..47)
+    #region random special character (ascii decimal 33..47)
     # 33,36..37,40..47,63..64,94..95
-    # $digits = 33..47 | Get-Random -Count $numSpcl
+    # $digits = 33..47 | Get-Random -Count $numSpcl    
 
     ### random digits & spl chars with exclusions: @(,33 + 36..37 + 40..59 + 63..64 + ,92 + 94..96)
+    #endregion
     
     $digits = $null
     $specialCharArr = $null
 
-    # $digits = @(,33 + 36..37 + 40..59 + 63..64 + ,92 + 94..96) | Get-Random -Count $numSpcl
-
-    #
+    # $digits = @(,33 + 36..37 + 40..59 + 63..64 + ,92 + 94..96) | Get-Random -Count $numSpcl    
     ###-> bug: 3-consecutive digits missing special character(s)
     $digits = @(,33 + 36..37 + ,42 + 47..59 + 63..64 + ,92 + 94..95) | Get-Random -Count $numSpcl
-
-    # $digits = @(,33 + 36..37 + 40..47 + 63..64 +94..95) | Get-Random -Count $numSpcl # 33..47 | Get-Random -Count $numSpcl
 
     foreach ( $digit in $digits )
     {
@@ -60,8 +55,6 @@ function randomSpecialChar
     return [string]$($specialCharArr -join "")
 }
 #endregion
-
-# randomSpecialChar
 
 # load array of indexed words in memory
 $indexedWords = Get-Content -LiteralPath $filePath # 'C:\Users\alex0\OneDrive\Documents\WindowsPowerShell\Scripts\CompoundWords\IndexedWords.txt'
@@ -125,60 +118,31 @@ for($k=1; $k -le $numPwd; $k++) {
         $scriptBlock += ")"
 
         $scriptBlock = [scriptblock]::Create($scriptBlock)
-        # $scriptBlock
-
 
         # convert random character(s) to uppercase 
-
         $newStr = $null
-
         for($i=0; $i -le $(($str.Length)-1); $i++) {
 
             # Write-Host $scriptBlock
-            # "`$i = {0}" -f $i
-    
+            # "`$i = {0}" -f $i    
 
             if( Invoke-Command -ScriptBlock $scriptBlock ) 
             {
-
                 $newStr += $str[$i]
                 # $newStr -join ''
-
             }
             else
             {
                 $newStr += $str[$i].ToString().ToUpper()
                 # $newStr -join ''
-
             }
         }
 
         Write-Debug $($newStr -join '').ToString()
-        Write-Debug "`r"
-
-        #region hide
-        <#
-        $obj = $_.ToString()
-        # $obj
-        # "`r"
-
-        foreach($index in $ucIndex) {
-            
-            ##############################################################################
-            ### fixed: bug $obj.Replace converts all occurences of the character to upper case ##
-            ### fixed: does not work with index=0                                              ##
-            ### exclude ('), (") from special characters
-            ##############################################################################
-
-
-            $obj = $obj.Replace($obj[$index-1],$obj[$index-1].ToString().ToUpper()) 
-                 
-        } #>
-        #endregion
+        Write-Debug "`r"        
 
         # add word to passphrase
         $passPhrase += $($newStr -join '') # $obj
-
     }
 
     # $separator = $( $((1..9 | Get-Random -Count $numDigits) -join '') + $(randomSpecialChar -numSpcl $numSpcl) )
@@ -187,8 +151,6 @@ for($k=1; $k -le $numPwd; $k++) {
     $passPhrase = $($passPhrase -join " $separator ")
 
     "{0} characters random passphrase: {1}`r" -f $(($passPhrase.length)),$($passPhrase)
-    
-
 }
 
 "`r"
