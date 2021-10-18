@@ -1,8 +1,11 @@
 ﻿[CmdletBinding()]
 param(
-    $numPwd = 10,
-    $numWords = 2,
-    $numSpcl = 4
+    [Parameter(Mandatory=$false,ValueFromPipeline=$true)]
+    [int]$numPwd = 5,
+    [Parameter(Mandatory=$false,ValueFromPipeline=$true)]
+    [int]$numWords = 2,
+    [Parameter(Mandatory=$false,ValueFromPipeline=$true)]
+    [int]$numSpcl = 4
 )
 
 $filePath = "$PSScriptRoot\IndexedWords.txt"
@@ -10,11 +13,11 @@ $filePath = "$PSScriptRoot\IndexedWords.txt"
 #region password policies
 <#
     Password Policies:
-    BECU:  8-32 alpha numeric + special characters
-    Fidelity: 6-20 alpha-numeric-special characters excluding "#&*<>[]'{}
-    TD Ameritrade: 32 alpha numeric + special characters
-                   "  #  &  '  *  <  >  [  ]  {   }
-    exclude chars: 34,35,38,39,42,60,62,91,93,123,125 
+    Banking:  8-32 alpha numeric + special characters
+    Investment Broker: 6-20 alpha-numeric-special characters excluding "#&*<>[]'{}
+                       32 alpha numeric + special characters
+                       "  #  &  '  *  <  >  [  ]  {   }
+    exclude chars:     34,35,8,39,42,60,62,91,93,123,125 
     
     Additional excludes: (  )  +  ,  -  .  `
                          40,41,43,44,45,46,96  
