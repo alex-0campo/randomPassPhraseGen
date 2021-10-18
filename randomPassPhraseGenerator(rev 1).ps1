@@ -7,6 +7,8 @@ param(
     # $numUpperCase = 3
 )
 
+$filePath = "$PSScriptRoot\IndexedWords.txt"
+
 #region password policies
 <#
     Password Policies:
@@ -21,6 +23,7 @@ param(
 #>
 #endregion
 
+$filePath
 Clear-Host
 
 #region functions 
@@ -61,7 +64,7 @@ function randomSpecialChar
 # randomSpecialChar
 
 # load array of indexed words in memory
-$indexedWords = Get-Content -LiteralPath 'C:\Users\alex0\OneDrive\Documents\WindowsPowerShell\Scripts\CompoundWords\IndexedWords.txt'
+$indexedWords = Get-Content -LiteralPath $filePath # 'C:\Users\alex0\OneDrive\Documents\WindowsPowerShell\Scripts\CompoundWords\IndexedWords.txt'
 
 # loop through each [$numPwd] to create
 for($k=1; $k -le $numPwd; $k++) {
@@ -187,3 +190,5 @@ for($k=1; $k -le $numPwd; $k++) {
     
 
 }
+
+"`r"
