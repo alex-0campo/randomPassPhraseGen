@@ -1,6 +1,6 @@
 ﻿[CmdletBinding()]
 param(
-    $numPwd = 5,
+    $numPwd = 10,
     $numWords = 2,
     $numSpcl = 4
 )
@@ -150,7 +150,7 @@ for($k=1; $k -le $numPwd; $k++) {
 
     $passPhrase = $($passPhrase -join " $separator ")
 
-    "{0} characters random passphrase: {1}`r" -f $(($passPhrase.length)),$($passPhrase)
+    "{0} chars random passphrase: {1}`r" -f $(($passPhrase.length)),$($passPhrase)
 }
 
 "`r"
