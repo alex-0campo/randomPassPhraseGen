@@ -2,6 +2,4 @@
 
 Develop a random passphrase generator using PowerShell...
 
-Track work in progress (import CompoundWordsPwdGenerator(rev 1).ps1 from CompoundWordsPwdGenerator(rev 1).ps1)
-
-
+Note: work in progress...
