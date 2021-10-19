@@ -5,7 +5,7 @@ param(
     [Parameter(Mandatory=$false,ValueFromPipeline=$true)]
     [int]$numWords = 2,
     [Parameter(Mandatory=$false,ValueFromPipeline=$true)]
-    [int]$numSpcl = 4
+    [int]$numSpcl = 3
 )
 
 $filePath = "$PSScriptRoot\IndexedWords.txt"
@@ -56,34 +56,51 @@ function randomSpecialChar
     }
 
     return [string]$($specialCharArr -join "")
+} # end randomSpecialChar
+
+function randomWords {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
+        [int] $numWords
+    )
+
+    # load array of indexed words in memory
+    $indexedWords = Get-Content -LiteralPath $filePath # 'C:\Users\alex0\OneDrive\Documents\WindowsPowerShell\Scripts\CompoundWords\IndexedWords.txt'
+
+    # loop through each [$numPwd] to create (n) random words
+    for($k=1; $k -le $numPwd; $k++) {
+
+        # roll virtual dice and pick [$numWords] random words
+        $wordArr = @()
+        $wordCounter = 1
+
+        do {
+            $index = $(for($i=1; $i -le 5; $i++) {
+                Get-Random -min 1 -max 6
+            }) -join ''
+
+            $wordArr += $(($indexedWords -match $index) -split "`t")[1]
+            $wordCounter++
+        } While($wordCounter -le $numWords)
+    }
+    
+    return $wordArr
 }
-#endregion
 
-# load array of indexed words in memory
-$indexedWords = Get-Content -LiteralPath $filePath # 'C:\Users\alex0\OneDrive\Documents\WindowsPowerShell\Scripts\CompoundWords\IndexedWords.txt'
+function randomUpperCase {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
+        [array] $wordArr
+    )
 
-# loop through each [$numPwd] to create
-for($k=1; $k -le $numPwd; $k++) {
-
-    # roll virtual dice and pick [$numWords] random words
-    $wordArr = @()
-    $wordCounter = 1
-
-    do {
-        $index = $(for($i=1; $i -le 5; $i++) {
-            Get-Random -min 1 -max 6
-        }) -join ''
-
-        $wordArr += $(($indexedWords -match $index) -split "`t")[1]
-        $wordCounter++
-    } While($wordCounter -le $numWords)
-
-    # build passphrase with random digits and special characters
-    $passPhrase = @()
+    $newWordArr = @()
 
     $wordArr | ForEach-Object {
 
         $str = $null = $_.ToString()
+        # $str
         
         # convert random character(s) to uppercase 
         # ([int] $($wordArr[$i].length/3))
@@ -141,20 +158,30 @@ for($k=1; $k -le $numPwd; $k++) {
             }
         }
 
-        Write-Debug $($newStr -join '').ToString()
-        Write-Debug "`r"        
+        # Write-Host $newStr
+        # $($newStr -join '').ToString()
 
-        # add word to passphrase
-        $passPhrase += $($newStr -join '') # $obj
+        $newWordArr += $(,$newStr)
+
+        Write-Debug $($newStr -join '').ToString()
+        Write-Debug "`r"
     }
 
-    # $separator = $( $((1..9 | Get-Random -Count $numDigits) -join '') + $(randomSpecialChar -numSpcl $numSpcl) )
-    $separator = $(randomSpecialChar -numSpcl $numSpcl) # $( $((1..9 | Get-Random -Count $numDigits) -join '') + $(randomSpecialChar -numSpcl $numSpcl) )
+    # return $($newStr -join '').ToString()
+    return $newWordArr
+}
+#endregion functions
 
-    $passPhrase = $($passPhrase -join " $separator ")
+for($i=1; $i -le $numPwd; $i++) {
 
-    "{0} chars random passphrase: {1}`r" -f $(($passPhrase.length)),$($passPhrase)
+    $separator = $(randomSpecialChar -numSpcl $numSpcl)
+    $passPhrase = $( randomUpperCase -wordArr $(randomWords  -numWords $numWords) )
+
+    $($passPhrase -join " $separator ")
+
+    # $passPhrase = $($passPhrase -join " $separator ")
+    # "{0} chars random passphrase: {1}`r" -f $(($passPhrase.length)), $($passPhrase)
+
 }
 
 "`r"
-    
